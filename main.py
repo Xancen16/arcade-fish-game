@@ -18,14 +18,15 @@ if RES == None:
     CON.commit()
 
 class APP(arcade.Window):
-    def __init__(self):
-        super().__init__(WID, HEI, TIT)
+    def init(self):
+        super().init(WID, HEI, TIT)
         self.ply = arcade.SpriteList()
         self.obs = arcade.SpriteList()
         self.ite = arcade.SpriteList()
         self.obj = None
         self.idx = 1
         self.cur = 0
+        self.spd = -10
         CUR.execute("SELECT hig, mon FROM sta WHERE id = 1")
         DAT = CUR.fetchone()
         self.hig = DAT[0]
@@ -36,13 +37,13 @@ class APP(arcade.Window):
         self.ply = arcade.SpriteList()
         self.obs = arcade.SpriteList()
         self.ite = arcade.SpriteList()
-        
-        # Смена цвета если монет > 10
+        self.spd = -10
+
         if self.mon > 10:
             clr = arcade.color.RED
         else:
             clr = arcade.color.GOLD
-            
+
         self.obj = arcade.SpriteSolidColor(50, 20, clr)
         self.obj.center_x = 100
         self.obj.center_y = LAN[self.idx]
@@ -62,19 +63,23 @@ class APP(arcade.Window):
         self.obs.update()
         self.ite.update()
         self.cur = self.cur + 1
-        
+
+Ускорение каждые 500 очков
+        if self.cur % 500 == 0:
+            self.spd = self.spd - 1
+
         if random.randint(1, 50) == 1:
             bad = arcade.SpriteSolidColor(40, 40, arcade.color.WHITE)
             bad.center_x = WID + 50
             bad.center_y = LAN[random.randint(0, 2)]
-            bad.change_x = -10
+            bad.change_x = self.spd
             self.obs.append(bad)
-            
+
         if random.randint(1, 100) == 1:
             get = arcade.SpriteSolidColor(20, 20, arcade.color.YELLOW)
             get.center_x = WID + 50
             get.center_y = LAN[random.randint(0, 2)]
-            get.change_x = -8
+            get.change_x = self.spd + 2
             self.ite.append(get)
 
         for col in self.ite:
